@@ -1,6 +1,8 @@
 #!/usr/local/bin/lua
 
 zlib = require("zlib")
+re = require("rex_pcre2")
+JSON = require("JSON")
 
 zlibPrefix = "\x78\x9c"
 deflatePostfix = "\x00\x00\xff\xff"
@@ -112,9 +114,18 @@ function parse_websocket(msg)
    if (zipped) then resultstr = _deflate(resultstr) end
 
    local suppress = os.getenv("WSMONITOR_SUPPRESS")
-   if (not suppress or not string.find(resultstr, suppress)) then
+   if (not suppress or string.len(suppress) <= 0 or not re.match(resultstr, suppress)) then
       print(outstr .. "\t" .. _request_string(sendrequest))
-      print(resultstr .. "\n")
+
+      if (os.getenv("WSMONITOR_PRETTY") == "1") then
+         function JSON.assert(message)
+            print(resultstr .. "\n")
+         end
+         local jsono = JSON.decode(JSON, resultstr)
+         print(JSON.encode_pretty(JSON, jsono) .. "\n")
+      else
+         print(resultstr .. "\n")
+      end
    end
 end
 

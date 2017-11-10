@@ -1,10 +1,5 @@
 #!/bin/bash
 
-# http, websocket 通信刨析器，可用来观察 与目标机 指定端口 的指定方向的通信内容
-
-# TODO
-# 1. 可能需要对拆分后的包进行组包
-
 useage()
 {
     echo "useage: $0 direction host port"
